@@ -8,6 +8,8 @@ import { wall as wallUrl } from "./resource.js";
 const keyboard = new KeyboardService();
 keyboard.enable();
 
+const switcher = document.querySelector("#switch-camera");
+
 const renderer = new THREE.WebGLRenderer();
 document.body.append(renderer.domElement);
 
@@ -128,7 +130,7 @@ keyboard.register("space", () => {
   cameraInfo.paused = !cameraInfo.paused;
 });
 keyboard.register("enter", switchCamera);
-renderer.domElement.addEventListener("dblclick", switchCamera);
+switcher.addEventListener("click", switchCamera);
 
 requestAnimationFrame(render);
 
