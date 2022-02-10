@@ -127,12 +127,15 @@ keyboard.register("right", () => {
 keyboard.register("space", () => {
   cameraInfo.paused = !cameraInfo.paused;
 });
-keyboard.register("enter", () => {
-  activeCamera = (activeCamera + 1) % cameras.length;
-  controls.enabled = cameras[activeCamera] === externalCamera;
-});
+keyboard.register("enter", switchCamera);
+renderer.domElement.addEventListener("dblclick", switchCamera);
 
 requestAnimationFrame(render);
+
+function switchCamera() {
+  activeCamera = (activeCamera + 1) % cameras.length;
+  controls.enabled = cameras[activeCamera] === externalCamera;
+}
 
 function updatePlayer() {
   player.position.x = playerCamera.position.x;
