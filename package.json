@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build index.html"
+    "build": "parcel build --public-url './' index.html"
   },
   "dependencies": {
     "@violentmonkey/shortcut": "^1.2.6",
