@@ -2,7 +2,19 @@
   "name": "maze",
   "version": "1.0.0",
   "description": "",
-  "keywords": [],
-  "author": "Gerald <gera2ld@live.com>",
-  "license": "MIT"
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "@violentmonkey/shortcut": "^1.2.6",
+    "parcel-bundler": "^1.6.1",
+    "three": "^0.143.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.143.0",
+    "typescript": "^4.7.4"
+  },
+  "keywords": []
 }

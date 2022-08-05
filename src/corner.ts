@@ -4,7 +4,7 @@ const R = 0b000001;
 const L = 0b000010;
 const U = 0b000100;
 const D = 0b001000;
-const directionNames = {
+const directionNames: Record<number, string> = {
   [S]: "S",
   [E]: "E",
   [R]: "R",
@@ -13,7 +13,10 @@ const directionNames = {
   [D]: "D"
 };
 
-const corners = {
+type Point = [number, number];
+type Vector = [number, number];
+
+const corners: Record<number, Vector> = {
   [R | U]: [-1, 1],
   [R | D]: [1, 1],
   [L | U]: [-1, -1],
@@ -28,14 +31,14 @@ const corners = {
   [R | E]: [1, 1]
 };
 
-function getCornerPoint(p1, p2, p3, halfDepth) {
+function getCornerPoint(p1: Point, p2: Point, p3: Point, halfDepth: number) {
   const corner = getCorner(p1, p2, p3);
   // console.log(reprEnum(corner));
   const [offX, offY] = corners[corner];
   return [p2[0] + offX * halfDepth, p2[1] + offY * halfDepth];
 }
 
-function getDirection(p1, p2) {
+function getDirection(p1: Point, p2: Point) {
   if (!p1) return S;
   if (!p2) return E;
   if (p1[0] < p2[0]) return R;
@@ -44,7 +47,7 @@ function getDirection(p1, p2) {
   return D;
 }
 
-function getCorner(p1, p2, p3) {
+function getCorner(p1: Point, p2: Point, p3: Point) {
   const d1 = getDirection(p1, p2);
   const d2 = getDirection(p2, p3);
   if (d1 === d2) {
@@ -55,7 +58,7 @@ function getCorner(p1, p2, p3) {
   return d;
 }
 
-export function getOutlinePoints(points, halfDepth) {
+export function getOutlinePoints(points: Point[], halfDepth: number) {
   const outlinePoints = [];
   for (let i = 0; i < points.length; i += 1) {
     outlinePoints.push(
@@ -70,9 +73,9 @@ export function getOutlinePoints(points, halfDepth) {
   return outlinePoints;
 }
 
-function reprEnum(value) {
+function reprEnum(value: number) {
   const keys = Object.keys(directionNames).map((v) => +v);
-  const enums = [];
+  const enums: string[] = [];
   while (value) {
     const key = keys.find((k) => (value & k) === k);
     if (!key) {

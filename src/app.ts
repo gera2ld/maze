@@ -1,9 +1,9 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three/+esm";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three/examples/jsm/controls/OrbitControls.js/+esm";
-import { KeyboardService } from "https://cdn.jsdelivr.net/npm/@violentmonkey/shortcut/+esm";
-import { getOutlinePoints } from "./corner.js";
-import { Directions, generateMaze, getLines, isConnected } from "./maze.js";
-import { wall as wallUrl } from "./resource.js";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { KeyboardService } from "@violentmonkey/shortcut";
+import { getOutlinePoints } from "./corner";
+import { Directions, generateMaze, getLines, isConnected } from "./maze";
+import { wall as wallUrl } from "./resource";
 
 const keyboard = new KeyboardService();
 keyboard.enable();
@@ -28,7 +28,7 @@ const scene = new THREE.Scene();
 
 const width = 10;
 const height = 10;
-const scale = 1;
+const scale = 2;
 const thickness = 0.2;
 
 const planeGeometry = new THREE.PlaneGeometry(width * scale, height * scale);
@@ -47,13 +47,8 @@ lines.push([
   [0, height]
 ]);
 const walls = new THREE.Object3D();
-const loader = new THREE.TextureLoader();
-const texture = loader.load(wallUrl);
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-const materialWall = new THREE.MeshPhongMaterial({ map: texture });
 const materialPure = new THREE.MeshPhongMaterial({ color: "hsl(20,60%,50%)" });
-const materials = [materialPure, materialWall];
+const materials = [materialPure, materialPure];
 lines.forEach((line) => {
   line = line.map((p) => p.map((i) => i * scale));
   // console.log(line);
@@ -61,7 +56,7 @@ lines.forEach((line) => {
   // console.log(points);
   const shape = new THREE.Shape(points.map((p) => new THREE.Vector2(...p)));
   const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: 2,
+    depth: 1.5,
     bevelEnabled: false
   });
   const wall = new THREE.Mesh(geometry, materials);

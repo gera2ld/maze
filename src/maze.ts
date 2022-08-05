@@ -1,17 +1,9 @@
-/**
- * @typedef {[rightConnected: boolean, bottomConnected: boolean]} MazeCellInfo
- * @typedef {MazeCellInfo[][]} ConnectionInfo
- */
+type MazeCellInfo = [rightConnected: boolean, bottomConnected: boolean];
+type ConnectionInfo = MazeCellInfo[][];
 
-/**
- *
- * @param {number} width
- * @param {number} height
- * @returns {ConnectionInfo}
- */
-export function generateMaze(width, height) {
-  const connections = Array.from({ length: width }, () =>
-    Array.from({ length: height }, () => [0, 0])
+export function generateMaze(width: number, height: number): ConnectionInfo {
+  const connections: ConnectionInfo = Array.from({ length: width }, () =>
+    Array.from({ length: height }, () => [false, false])
   );
   // remove some random walls
   const times = width * height;
@@ -20,7 +12,7 @@ export function generateMaze(width, height) {
     const h = (Math.random() * height) | 0;
     const j = (Math.random() * 2) | 0;
     if ((w < width - 1 || j) && (h < height - 1 || !j)) {
-      connections[w][h][j] = 1;
+      connections[w][h][j] = true;
     }
   }
   // make sure all cells are connected
@@ -28,9 +20,9 @@ export function generateMaze(width, height) {
     Array.from({ length: height }, () => false)
   );
   visited[0][0] = true;
-  const borders = new Map();
+  const borders = new Map<number, boolean[]>();
   const queue = [[0, 0]];
-  const updateBorder = (bx, by, j, v) => {
+  const updateBorder = (bx: number, by: number, j: number, v: boolean) => {
     const k = point2index(width, bx, by);
     let items = borders.get(k);
     if (v && !items) {
@@ -44,8 +36,8 @@ export function generateMaze(width, height) {
       }
     }
   };
-  const checkBorder = (bx, by, j) => {
-    const x = bx + !j;
+  const checkBorder = (bx: number, by: number, j: number) => {
+    const x = bx + +!j;
     const y = by + j;
     if (bx < 0 || x >= width || by < 0 || y >= height) return;
     const hasBorder =
@@ -55,7 +47,7 @@ export function generateMaze(width, height) {
     // }
     updateBorder(bx, by, j, hasBorder);
   };
-  const check = (x0, y0, dx, dy) => {
+  const check = (x0: number, y0: number, dx: number, dy: number) => {
     const x = x0 + dx;
     const y = y0 + dy;
     if (x < 0 || x >= width || y < 0 || y >= height || visited[x][y]) return;
@@ -87,7 +79,7 @@ export function generateMaze(width, height) {
       // console.log('round', r);
       break;
     }
-    const keys = [...borders.keys()];
+    const keys = Array.from(borders.keys());
     const key = keys[(keys.length * Math.random()) | 0];
     const items = borders.get(key);
     const j = items.findIndex(Boolean);
@@ -95,9 +87,9 @@ export function generateMaze(width, height) {
     // console.log(borders);
     // console.log(reprMaze(connections, visited));
     // console.log('remove border', x, y, j);
-    connections[x][y][j] = 1;
+    connections[x][y][j] = true;
     updateBorder(x, y, j, false);
-    queue.push([x, y], [x + !j, y + j]);
+    queue.push([x, y], [x + +!j, y + j]);
   }
   // console.log(borders);
   // console.log(reprMaze(connections, visited));
@@ -111,14 +103,7 @@ export const Directions = [
   [1, 0] // right
 ];
 
-/**
- * @param {ConnectionInfo} connections
- * @param {number} x
- * @param {number} y
- * @param {number} directionType
- * @returns {boolean}
- */
-export function isConnected(connections, x, y, directionType) {
+export function isConnected(connections: ConnectionInfo, x: number, y: number, directionType: number) {
   const width = connections.length;
   const height = connections[0].length;
   if (x < 0 || x >= width || y < 0 || y >= height) return false;
@@ -132,7 +117,7 @@ export function isConnected(connections, x, y, directionType) {
   return connections[x][y][1];
 }
 
-export function reprMaze(connections, visited) {
+export function reprMaze(connections: ConnectionInfo, visited: boolean[][]) {
   const output = [];
   const width = connections.length;
   const height = connections[0].length;
@@ -158,41 +143,26 @@ export function reprMaze(connections, visited) {
   return output.join("\n");
 }
 
-function point2index(width, x, y) {
+function point2index(width: number, x: number, y: number) {
   return y * width + x;
 }
 
-function index2point(width, i) {
+function index2point(width: number, i: number) {
   const x = i % width;
   const y = (i / width) | 0;
   return [x, y];
 }
 
-export function getLines(connections) {
+export function getLines(connections: ConnectionInfo) {
   const width = connections.length;
   const height = connections[0].length;
-  const borders = new Map();
-  const subset = () => new Set();
-  const setDefault = (map, key, def) => {
-    let sub = map.get(key);
-    if (!sub) {
-      sub = def();
-      map.set(key, sub);
-    }
-    return sub;
-  };
-  const removeItem = (map, key, item) => {
-    const items = map.get(key);
-    if (items) {
-      items.delete(item);
-      if (!items.size) map.delete(key);
-    }
-  };
-  const addBorder = (i1, i2) => {
+  const borders = new Map<number, Set<number>>();
+  const subset = () => new Set<number>();
+  const addBorder = (i1: number, i2: number) => {
     setDefault(borders, i1, subset).add(i2);
     setDefault(borders, i2, subset).add(i1);
   };
-  const delBorder = (i1, i2) => {
+  const delBorder = (i1: number, i2: number) => {
     removeItem(borders, i1, i2);
     removeItem(borders, i2, i1);
   };
@@ -215,7 +185,7 @@ export function getLines(connections) {
   }
   const lines = [];
   while (borders.size) {
-    let key;
+    let key: number;
     let size = Infinity;
     for (const [k, set] of borders.entries()) {
       if (set.size < size) {
@@ -232,7 +202,7 @@ export function getLines(connections) {
       delBorder(key, one);
       key = one;
     }
-    const points = indices.map(index2point.bind(null, width + 1));
+    const points = indices.map(idx => index2point(width + 1, idx));
     const line = points.slice(0, 2);
     for (let i = 2; i < points.length; i += 1) {
       const p1 = line.at(-2);
@@ -248,4 +218,21 @@ export function getLines(connections) {
   }
   // console.log("yyy", connections);
   return lines;
+}
+
+function setDefault<T, U>(map: Map<T, U>, key: T, def: () => U) {
+  let sub = map.get(key);
+  if (!sub) {
+    sub = def();
+    map.set(key, sub);
+  }
+  return sub;
+}
+
+function removeItem<T, U>(map: Map<T, Set<U>>, key: T, item: U) {
+  const items = map.get(key);
+  if (items) {
+    items.delete(item);
+    if (!items.size) map.delete(key);
+  }
 }
